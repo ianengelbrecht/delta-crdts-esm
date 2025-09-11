@@ -1,0 +1,37 @@
+{
+  "name": "delta-crdts",
+  "version": "0.10.3",
+  "description": "Delta-based State CRDTs",
+  "main": "src/index.js",
+  "type": "module",
+  "scripts": {
+    "test": "npm run test:node && npm run test:browser",
+    "test:node": "aegir test --target node",
+    "test:browser": "AEGIR_BROWSERS=Chrome,Firefox aegir test --target browser",
+    "lint": "aegir lint"
+  },
+  "author": "Pedro Teixeira <i@pgte.me>",
+  "license": "MIT",
+  "devDependencies": {
+    "aegir": "^47.0.21",
+    "allcombinations": "^1.1.4",
+    "chai": "^4.2.0",
+    "combinations": "^1.0.0",
+    "delay": "^6.0.0",
+    "dirty-chai": "^2.0.1",
+    "mocha": "^11.7.2",
+    "p-queue": "^8.1.1",
+    "pre-commit": "^1.2.2",
+    "shuffle-array": "^1.0.1"
+  },
+  "dependencies": {
+    "@msgpack/msgpack": "^3.1.2",
+    "delta-crdts-msgpack-codec": "~0.2.0",
+    "hash-it": "^4.0.4",
+    "immutable": "^4.0.0-rc.12"
+  },
+  "pre-commit": [
+    "lint",
+    "test"
+  ]
+}
