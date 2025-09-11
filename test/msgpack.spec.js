@@ -14,25 +14,30 @@ describe('msgpack', () => {
     timestampExt: new Date(),
   };
 
+  const encodableMapsAndSets = [1, 'a', { b: 'c' }, new Set(['d']), new Map([['e', new Set([new Map([['f', 'g']])])]])]
+
+  let encodedObject, encodedSetMap
+  before(() => { encodedObject = encode(object) })
+  before(() => { encodedSetMap = encode(encodableMapsAndSets) })
+
   it('encodes objects', () => {
-    const encoded = encode(object);
-    expect(encoded instanceof Uint8Array).to.be.true;
+    expect(encodedObject instanceof Uint8Array).to.be.true;
   });
 
   it('decodes objects', () => {
-    const decoded = decode(encoded);
+    const decoded = decode(encodedObject);
     expect(decoded).to.deep.equal(object);
   });
 
-  const encodable = [1, 'a', { b: 'c' }, new Set(['d']), new Map([['e', new Set([new Map([['f', 'g']])])]])]
-  let encoded
+
+  encodedSetMap = encode(encodableMapsAndSets)
+
   it('encodes sets and maps', () => {
-    encoded = codec.encode(encodable)
-    expect(encoded instanceof Uint8Array).to.be.true
+    expect(encodedSetMap instanceof Uint8Array).to.be.true
   })
 
   it('decodes sets and maps', () => {
-    const decoded = codec.decode(encoded)
-    expect(decoded).to.deep.equal(encodable)
+    const decoded = decode(encodedSetMap)
+    expect(decoded).to.deep.equal(encodableMapsAndSets)
   })
 })

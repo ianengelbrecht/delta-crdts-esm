@@ -1,7 +1,7 @@
 'use strict'
 
 import DotSet from './dot-set.js';
-import { encode } from 'delta-crdts-msgpack-codec';
+import { encode } from './msgpack.js';
 
 export default {
   initial() { return new DotSet() },

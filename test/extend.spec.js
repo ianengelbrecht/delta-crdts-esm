@@ -1,18 +1,15 @@
 /* eslint-env mocha */
 'use strict'
 
+import { expect } from 'chai'
+import CRDT from '../src/index.js'
+
 const ZERO = {
   initial: () => 0,
   join: (s1, s2) => 0,
   value: (state) => state
 }
 
-const chai = require('chai')
-const dirtyChai = require('dirty-chai')
-const expect = chai.expect
-chai.use(dirtyChai)
-
-const CRDT = require('../')
 
 describe('extension', () => {
   let Type, replica

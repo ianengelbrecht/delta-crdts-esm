@@ -1,13 +1,10 @@
 /* eslint-env mocha */
 'use strict'
 
-const chai = require('chai')
-const dirtyChai = require('dirty-chai')
-const expect = chai.expect
-chai.use(dirtyChai)
-
-const CRDT = require('../')
-const Network = require('./helpers/network')
+import { expect } from 'chai'
+import CRDT from '../src/index.js'
+import transmit from './helpers/transmit.js'
+import Network from './helpers/network.js'
 
 const MAX_REPLICAS = 10
 const MAX_OPS_PER_REPLICA = 100

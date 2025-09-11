@@ -3,7 +3,7 @@
 import delay from 'delay';
 import Queue from 'p-queue';
 
-const transmit = require('./transmit')
+import transmit from './transmit.js'
 
 const defaultOptions = {
   maxDelay: 100

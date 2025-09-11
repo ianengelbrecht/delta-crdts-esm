@@ -1,28 +1,44 @@
 'use strict'
 
 import Type from './type.js'
+import gcounter from './gcounter.js'
+import pncounter from './pncounter.js'
+import lexcounter from './lexcounter.js'
+import ccounter from './ccounter.js'
+import gset from './gset.js'
+import twopset from './2pset.js'
+import aworset from './aworset.js'
+import rworset from './rworset.js'
+import mvreg from './mvreg.js'
+import ewflag from './ewflag.js'
+import dwflag from './dwflag.js'
+import rwlwwset from './rwlwwset.js'
+import lwwreg from './lwwreg.js'
+import rga from './rga.js'
+import ormap from './ormap.js'
+
+const types = {
+  gcounter,
+  pncounter,
+  lexcounter,
+  ccounter,
+  gset,
+  '2pset': twopset,
+  aworset,
+  rworset,
+  mvreg,
+  ewflag,
+  dwflag,
+  rwlwwset,
+  lwwreg,
+  rga,
+  ormap
+}
 
 export default function createType(typeName) {
   return Type(type(typeName))
 }
 
-const types = {
-  gcounter: require('./gcounter'),
-  pncounter: require('./pncounter'),
-  lexcounter: require('./lexcounter'),
-  ccounter: require('./ccounter'),
-  gset: require('./gset'),
-  '2pset': require('./2pset'),
-  aworset: require('./aworset'),
-  rworset: require('./rworset'),
-  mvreg: require('./mvreg'),
-  ewflag: require('./ewflag'),
-  dwflag: require('./dwflag'),
-  rwlwwset: require('./rwlwwset'),
-  lwwreg: require('./lwwreg'),
-  rga: require('./rga'),
-  ormap: require('./ormap')
-}
 
 export function type(typeName) {
   const type = types[typeName]

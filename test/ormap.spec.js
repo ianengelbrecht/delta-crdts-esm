@@ -1,14 +1,10 @@
 /* eslint-env mocha */
 'use strict'
 
-const chai = require('chai')
-const dirtyChai = require('dirty-chai')
-const expect = chai.expect
-chai.use(dirtyChai)
-
-const CRDT = require('../')
-const DotSet = require('../src/dot-set')
-const transmit = require('./helpers/transmit')
+import { expect } from 'chai'
+import CRDT from '../src/index.js'
+import DotSet from '../src/dot-set.js'
+import transmit from './helpers/transmit.js'
 
 describe('ormap', () => {
   describe('local', () => {
@@ -89,7 +85,8 @@ describe('ormap', () => {
       expect(replica.value()).to.deep.equal({
         a: new Set(['a', 'A']),
         b: new Set(['b', 'B']),
-        c: new Set(['c', 'C']) })
+        c: new Set(['c', 'C'])
+      })
     })
 
     it('the first converges', () => {
@@ -97,7 +94,8 @@ describe('ormap', () => {
       expect(replica1.value()).to.deep.equal({
         a: new Set(['a', 'A']),
         b: new Set(['b', 'B']),
-        c: new Set(['c', 'C']) })
+        c: new Set(['c', 'C'])
+      })
     })
 
     it('the second converges', () => {
@@ -105,7 +103,8 @@ describe('ormap', () => {
       expect(replica2.value()).to.deep.equal({
         a: new Set(['a', 'A']),
         b: new Set(['b', 'B']),
-        c: new Set(['c', 'C']) })
+        c: new Set(['c', 'C'])
+      })
     })
 
     it('keeps causality', () => {

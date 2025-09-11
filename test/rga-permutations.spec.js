@@ -1,17 +1,13 @@
 /* eslint-env mocha */
 'use strict'
 
-const chai = require('chai')
-const dirtyChai = require('dirty-chai')
-const expect = chai.expect
-chai.use(dirtyChai)
+import Combinations from 'combinations'
+import shuffle from 'shuffle-array'
+import delay from 'delay'
+import { expect } from 'chai'
+import CRDT from '../src/index.js'
+import transmit from './helpers/transmit.js'
 
-const Combinations = require('allcombinations')
-const shuffle = require('shuffle-array')
-const delay = require('delay')
-const transmit = require('./helpers/transmit')
-
-const CRDT = require('../')
 const RGA = CRDT('rga')
 
 const MAX_ITERATIONS = 5
@@ -28,7 +24,7 @@ describe('rga permutations', function () {
       let length = 0
 
       before(() => {
-        replicas = [ RGA('id1'), RGA('id2'), RGA('id3') ]
+        replicas = [RGA('id1'), RGA('id2'), RGA('id3')]
       })
 
       describe(`push mutations (${iteration + 1})`, () => {
@@ -120,7 +116,7 @@ describe('rga permutations', function () {
   }
 })
 
-function pushMutations (replicas) {
+function pushMutations(replicas) {
   const deltas = []
   replicas.forEach((replica, replicaIndex) => {
     for (let i = 0; i < OP_COUNT_PER_NODE; i++) {
@@ -146,7 +142,7 @@ function pushMutations (replicas) {
   return { deltas, expectedResult }
 }
 
-function randomMutations (replicas, iteration) {
+function randomMutations(replicas, iteration) {
   const deltas = []
   for (let i = 0; i < OP_COUNT_PER_NODE; i++) {
     replicas.forEach((replica, replicaIndex) => {

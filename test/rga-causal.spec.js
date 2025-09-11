@@ -1,14 +1,10 @@
 /* eslint-env mocha */
 'use strict'
 
-const chai = require('chai')
-const dirtyChai = require('dirty-chai')
-const expect = chai.expect
-chai.use(dirtyChai)
-
-const CRDTs = require('../')
-const RGA = CRDTs('rga')
-const rgaType = CRDTs.type('rga')
+import { expect } from 'chai'
+import CRDT from '../src/index.js'
+const RGA = CRDT('rga')
+const rgaType = CRDT.type('rga')
 
 describe('rga causal', () => {
   let deltaP, deltaE, deltaA, deltaR

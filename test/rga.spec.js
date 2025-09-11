@@ -1,13 +1,9 @@
 /* eslint-env mocha */
 'use strict'
 
-const chai = require('chai')
-const dirtyChai = require('dirty-chai')
-const expect = chai.expect
-chai.use(dirtyChai)
-
-const CRDT = require('../')
-const transmit = require('./helpers/transmit')
+import { expect } from 'chai'
+import CRDT from '../src/index.js'
+import transmit from './helpers/transmit.js'
 
 const SMALL_BIT = 500
 
@@ -24,7 +20,7 @@ describe('rga', () => {
     })
 
     it('starts empty', () => {
-      expect(rga.value()).to.be.empty()
+      expect(rga.value()).to.be.empty
     })
 
     it('adds to the right value', () => {
@@ -134,12 +130,12 @@ describe('rga', () => {
 
     it('the first converges (3)', () => {
       deltas[1].forEach((delta) => replica1.apply(transmit(delta)))
-      expect(replica1.value()).to.deep.equal([ 'c', 'b', 'g', 'h', 'e', 'f' ])
+      expect(replica1.value()).to.deep.equal(['c', 'b', 'g', 'h', 'e', 'f'])
     })
 
     it('and the second also converges (3)', () => {
       deltas[0].forEach((delta) => replica2.apply(transmit(delta)))
-      expect(replica2.value()).to.deep.equal([ 'c', 'b', 'g', 'h', 'e', 'f' ])
+      expect(replica2.value()).to.deep.equal(['c', 'b', 'g', 'h', 'e', 'f'])
     })
 
     it('waits a small bit (2)', (done) => setTimeout(done, SMALL_BIT))
@@ -147,18 +143,18 @@ describe('rga', () => {
     it('values can be inserted concurrently', () => {
       deltas = [[], []]
       deltas[0].push(replica1.insertAllAt(3, ['g.1']))
-      expect(replica1.value()).to.deep.equal([ 'c', 'b', 'g', 'g.1', 'h', 'e', 'f' ])
+      expect(replica1.value()).to.deep.equal(['c', 'b', 'g', 'g.1', 'h', 'e', 'f'])
       deltas[1].push(replica2.insertAt(3, 'g.2'))
     })
 
     it('the first converges (4)', () => {
       deltas[1].forEach((delta) => replica1.apply(transmit(delta)))
-      expect(replica1.value()).to.deep.equal([ 'c', 'b', 'g', 'g.2', 'g.1', 'h', 'e', 'f' ])
+      expect(replica1.value()).to.deep.equal(['c', 'b', 'g', 'g.2', 'g.1', 'h', 'e', 'f'])
     })
 
     it('and the second also converges (4)', () => {
       deltas[0].forEach((delta) => replica2.apply(transmit(delta)))
-      expect(replica2.value()).to.deep.equal([ 'c', 'b', 'g', 'g.2', 'g.1', 'h', 'e', 'f' ])
+      expect(replica2.value()).to.deep.equal(['c', 'b', 'g', 'g.2', 'g.1', 'h', 'e', 'f'])
     })
 
     it('can update at', () => {

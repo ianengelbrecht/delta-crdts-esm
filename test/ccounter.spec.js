@@ -1,13 +1,9 @@
 /* eslint-env mocha */
 'use strict'
 
-const chai = require('chai')
-const dirtyChai = require('dirty-chai')
-const expect = chai.expect
-chai.use(dirtyChai)
-
-const CRDT = require('../')
-const transmit = require('./helpers/transmit')
+import { expect } from 'chai'
+import CRDT from '../src/index.js'
+import transmit from './helpers/transmit.js'
 
 describe('ccounter', () => {
   describe('local', () => {

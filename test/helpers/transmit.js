@@ -1,7 +1,7 @@
 'use strict'
 
-const codec = require('delta-crdts-msgpack-codec')
+import { encode, decode } from '../src/msgpack.js';
 
-module.exports = (delta) => {
-  return codec.decode(codec.encode(delta))
+export default function transmit(delta) {
+  return decode(encode(delta))
 }
