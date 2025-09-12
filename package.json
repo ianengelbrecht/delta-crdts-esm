@@ -1,35 +1,50 @@
 {
-  "name": "delta-crdts",
-  "version": "0.10.3",
-  "description": "Delta-based State CRDTs",
-  "main": "src/index.js",
+  "name": "delta-crdts-esm",
+  "version": "0.11.0",
+  "description": "Updated Delta-based State CRDTs by Pedro Teixeira",
   "type": "module",
-  "scripts": {
-    "test": "npm run test:node && npm run test:browser",
-    "test:node": "aegir test --target node",
-    "test:browser": "AEGIR_BROWSERS=Chrome,Firefox aegir test --target browser",
-    "lint": "aegir lint"
+  "exports": {
+    ".": "./src/index.js"
   },
-  "author": "Pedro Teixeira <i@pgte.me>",
+  "files": [
+    "src",
+    "README.md"
+  ],
+  "scripts": {
+    "test": "mocha",
+    "prepublishOnly": "npm test"
+  },
+  "keywords": [
+    "crdt",
+    "delta-crdt",
+    "rga",
+    "replicated-data",
+    "conflict-free",
+    "distributed-systems"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ianengelbrecht/delta-crdts.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ianengelbrecht/delta-crdts/issues"
+  },
+  "homepage": "https://github.com/ianengelbrecht/delta-crdts#readme",
+  "author": "Ian Engelbrecht",
   "license": "MIT",
+  "sideEffects": false,
+  "engines": {
+    "node": ">=16"
+  },
   "devDependencies": {
-    "aegir": "^47.0.21",
-    "allcombinations": "^1.1.4",
-    "chai": "^4.2.0",
-    "combinations": "^1.0.0",
+    "chai": "^6.0.1",
     "delay": "^6.0.0",
-    "dirty-chai": "^2.0.1",
     "mocha": "^11.7.2",
     "p-queue": "^8.1.1",
-    "pre-commit": "^1.2.2",
     "shuffle-array": "^1.0.1"
   },
   "dependencies": {
     "@msgpack/msgpack": "^3.1.2",
     "hash-it": "^6.0.0"
-  },
-  "pre-commit": [
-    "lint",
-    "test"
-  ]
+  }
 }
