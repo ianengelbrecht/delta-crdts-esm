@@ -194,15 +194,16 @@ describe('rga', () => {
   describe('crdt ids', () => {
     let RGA = CRDT('rga')
 
-    it('using Buffer for CRDT ids gives consistent order', () => {
-      const replica1 = RGA(Buffer.from('a'))
-      const replica2 = RGA(Buffer.from('b'))
+    it('using Uint8Array for CRDT ids gives consistent order', () => {
+      const encoder = new TextEncoder();
+      const replica1 = RGA(encoder.encode('a'))
+      const replica2 = RGA(encoder.encode('b'))
       const deltaA = replica1.push('a')
       replica2.push('b')
       replica2.apply(deltaA)
       expect(replica2.value()).to.deep.equal(['b', 'a'])
-      const replica3 = RGA(Buffer.from('d'))
-      const replica4 = RGA(Buffer.from('c'))
+      const replica3 = RGA(encoder.encode('d'))
+      const replica4 = RGA(encoder.encode('c'))
       replica3.push('d')
       const deltaD = replica4.push('c')
       replica3.apply(deltaD)

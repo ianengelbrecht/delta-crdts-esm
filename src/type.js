@@ -1,7 +1,12 @@
 'use strict'
-
+//TODO remove all buffers throughout
+//TODO replace eventemmitter
 import EventEmitter from 'events'
-import { isCollection } from 'immutable'
+
+// replacing the old version from immutable.js -- immutable types are not created anywhere in the code
+export function isCollection(value) {
+  return value instanceof Map || value instanceof Set;
+}
 
 export default function createTypeInstance(Type) {
   return (id) => {

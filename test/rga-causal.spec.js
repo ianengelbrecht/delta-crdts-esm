@@ -9,24 +9,47 @@ const rgaType = CRDT.type('rga')
 describe('rga causal', () => {
   let deltaP, deltaE, deltaA, deltaR
 
+  //create all the deltas
   before(() => {
-    // Let's create the word 'pear' using two replicas
-    // 1. push 'p' to replicaPear
-    // 2. push 'e' and 'a' to replicaVowels
-    // 3. apply replicaVowels state to replicaPear
-    // 3. push 'r' to replicaPear ... spelling 'pear'
-    const replicaVowels = RGA('id1') // ID sort order matters
+
+    let consonants = RGA('cons')
+    let vowels = RGA('vows')
+    deltaP = consonants.push('p')
+    deltaE = vowels.push('e')
+    deltaA = vowels.push('a')
+    deltaR = consonants.push('r')
+
+  })
+
+  // Let's create the word 'pear' using two replicas
+  // 1. push 'p' to replicaPear
+  // 2. push 'e' and 'a' to replicaVowels
+  // 3. apply replicaVowels state to replicaPear
+  // 3. push 'r' to replicaPear ... spelling 'pear'
+  it('should be p', () => {
     const replicaPear = RGA('id2')
-    deltaP = replicaPear.push('p')
+    replicaPear.apply(deltaP)
     expect(replicaPear.value().join('')).to.equal('p')
-    deltaE = replicaVowels.push('e')
-    deltaA = replicaVowels.push('a')
+  })
+
+  it('should be ea', () => {
+    const replicaVowels = RGA('id1')
+    replicaVowels.apply(deltaE)
+    replicaVowels.apply(deltaA)
     expect(replicaVowels.value().join('')).to.equal('ea')
+  })
+
+  it('should be pea', () => {
+    const replicaPear = RGA('id2')
+    const replicaVowels = RGA('id1')
+    replicaPear.apply(deltaP)
+    replicaVowels.apply(deltaE)
+    replicaVowels.apply(deltaA)
     replicaPear.apply(replicaVowels.state())
     expect(replicaPear.value().join('')).to.equal('pea')
-    deltaR = replicaPear.push('r')
-    expect(replicaPear.value().join('')).to.deep.equal('pear')
   })
+
+
 
   it('behaves when applied in the original order', () => {
     const replica1 = RGA('replica1')

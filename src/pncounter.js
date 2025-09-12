@@ -1,6 +1,6 @@
 'use strict'
 
-import GCounter from './gcounter'
+import GCounter from './gcounter.js'
 
 export default {
   initial() {

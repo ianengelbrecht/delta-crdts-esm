@@ -150,7 +150,10 @@ function join(s1, s2, options = {}) {
     resultEdges.set(leftEdge, newKey)
     resultEdges.set(newKey, right)
   }
+
 }
+
+
 
 function insertAt(id, state, pos, value) {
   return insertAllAt(id, state, pos, [value])
@@ -213,15 +216,32 @@ function removeAt(id, state, pos) {
   return remove(id, state, elementId)
 }
 
+// thanks ChatGPT
+function uint8ArrayToBase64(u8) {
+  let s = '';
+  for (let i = 0; i < u8.length; i++) s += String.fromCharCode(u8[i]);
+  return btoa(s);
+}
+
 function createUniqueId(state, nodeId, index = 0) {
   const [, , edges] = state
   const pos = edges.size + index
-  return encode([pos, nodeId]).toString('base64')
+  const encoded = encode([pos, nodeId])
+  return uint8ArrayToBase64(encoded)
+}
+
+function base64ToUint8Array(b64) {
+  const s = atob(b64);
+  const u8 = new Uint8Array(s.length);
+  for (let i = 0; i < s.length; i++) u8[i] = s.charCodeAt(i);
+  return u8;
 }
 
 function compareIds(_id1, _id2) {
-  const id1 = decode(Buffer.from(_id1, 'base64'))
-  const id2 = decode(Buffer.from(_id2, 'base64'))
+  const u8Id1 = base64ToUint8Array(_id1)
+  const u8Id2 = base64ToUint8Array(_id2)
+  const id1 = decode(u8Id1)
+  const id2 = decode(u8Id2)
   const [pos1] = id1
   const [pos2] = id2
   let comparison = 0
@@ -234,11 +254,7 @@ function compareIds(_id1, _id2) {
     const [, nodeId1] = id1
     const [, nodeId2] = id2
     if (typeof nodeId1 === 'object' || typeof nodeId2 === 'object') {
-      // Buffer has a .compare() method
-      if (typeof nodeId1?.compare !== "function") {
-        throw new TypeError("object comparison needs compare method");
-      }
-      comparison = nodeId1.compare(nodeId2)
+      comparison = compareUint8Arrays(nodeId1, nodeId2)
     } else {
       if (nodeId1 < nodeId2) {
         comparison = -1
@@ -249,4 +265,24 @@ function compareIds(_id1, _id2) {
   }
 
   return comparison
+}
+
+//thanks ChatGPT
+function compareUint8Arrays(a, b) {
+  if (!(a instanceof Uint8Array) || !(b instanceof Uint8Array)) {
+    throw new TypeError("compareUint8Arrays expects Uint8Array arguments");
+  }
+
+  const len = Math.min(a.length, b.length);
+
+  for (let i = 0; i < len; i++) {
+    if (a[i] !== b[i]) {
+      return a[i] < b[i] ? -1 : 1;
+    }
+  }
+
+  // If all shared elements are equal, shorter array is "less"
+  if (a.length < b.length) return -1;
+  if (a.length > b.length) return 1;
+  return 0;
 }

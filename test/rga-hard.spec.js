@@ -3,7 +3,6 @@
 
 import { expect } from 'chai'
 import CRDT from '../src/index.js'
-import transmit from './helpers/transmit.js'
 import Network from './helpers/network.js'
 
 const MAX_REPLICAS = 10

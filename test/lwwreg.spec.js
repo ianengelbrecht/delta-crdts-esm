@@ -18,7 +18,7 @@ describe('lwwreg', () => {
     })
 
     it('starts empty', () => {
-      expect(lwwreg.value()).to.not.exist()
+      expect(lwwreg.value()).to.not.exist
     })
 
     it('can write value', () => {

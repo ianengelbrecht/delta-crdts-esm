@@ -117,7 +117,7 @@ describe('ormap', () => {
 
     it('add wins', () => {
       const delta1 = replica1.remove('b')
-      expect(replica1.value().b).to.not.exist()
+      expect(replica1.value().b).to.not.exist
       const delta2 = replica2.applySub('b', 'mvreg', 'write', 'BB')
       expect(replica2.value().b).to.deep.equal(new Set(['BB']))
       replica1.apply(transmit(delta2))
@@ -129,9 +129,9 @@ describe('ormap', () => {
 
     it('removals are stored in state', () => {
       replica1.remove('b')
-      expect(replica1.value().b).to.not.exist()
+      expect(replica1.value().b).to.not.exist
       replica2.apply(replica1.state())
-      expect(replica2.value().b).to.not.exist()
+      expect(replica2.value().b).to.not.exist
     })
   })
 })

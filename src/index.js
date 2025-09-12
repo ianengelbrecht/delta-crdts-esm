@@ -35,20 +35,23 @@ const types = {
   ormap
 }
 
-export default function createType(typeName) {
+export default function CRDT(typeName) {
   return Type(type(typeName))
 }
 
 
-export function type(typeName) {
+function type(typeName) {
   const type = types[typeName]
   if (!type) { throw new Error(`unknown type named ${typeName}`) }
   return type
 }
 
-export function define(typeName, impl) {
+function define(typeName, impl) {
   if (types[typeName]) {
     throw new Error(`${typeName} is already defined as a type`)
   }
   types[typeName] = impl
 }
+
+CRDT.define = define
+CRDT.type = type

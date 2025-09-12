@@ -4,7 +4,7 @@ import CausalContext from './causal-context.js';
 import CustomSet from './custom-set.js'
 import CRDT from './index.js'
 
-class DotMap {
+export default class DotMap {
   constructor(cc, state) {
     this.cc = cc || new CausalContext()
     this.state = state || new Map()
@@ -78,8 +78,6 @@ class DotMap {
     return result
   }
 }
-
-module.exports = DotMap
 
 function join(s1, s2) {
   if (typeof s1 === 'function') {
