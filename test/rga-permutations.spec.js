@@ -1,7 +1,8 @@
 /* eslint-env mocha */
+// this was updated from the original to remove Combinations, which was causing heap overflow
+// note this takes a long time to run and should probably not be part of normal CI runs; run manually as needed
 'use strict'
 
-import Combinations from 'combinations'
 import shuffle from 'shuffle-array'
 import delay from 'delay'
 import { expect } from 'chai'
@@ -28,7 +29,6 @@ describe('rga permutations', function () {
       })
 
       describe(`push mutations (${iteration + 1})`, () => {
-        let combinations
         let expectedResult
         let newDeltas
 
@@ -38,34 +38,41 @@ describe('rga permutations', function () {
           expectedResult = _expectedResult
           expect(expectedResult.length).to.equal(length + OP_COUNT_PER_NODE * replicas.length)
           length = expectedResult.length
-          combinations = Combinations(shuffle(deltas))
         })
 
         after(() => {
           allDeltas = allDeltas.concat(newDeltas)
         })
 
-        it('all combinations lead to the same result', async () => {
-          let iterations = 0
-          for (let deltas of combinations) {
+        it('all (sampled) orders lead to the same result', async () => {
+          const deltas = newDeltas
+
+          // Deterministic orders first (good for debugging)
+          const deterministicOrders = [
+            [...deltas],                      // original order
+            [...deltas].reverse(),            // reverse order
+            // stable stringified order (fallback if deltas have no natural comparator)
+            [...deltas].slice().sort((a, b) => String(a).localeCompare(String(b)))
+          ]
+
+          for (const order of deterministicOrders) {
             const r = RGA('read')
-            for (let delta of deltas) {
-              r.apply(transmit(delta))
-            }
-
+            for (const d of order) r.apply(transmit(d))
             expect(r.value()).to.deep.equal(expectedResult)
+          }
 
-            if (++iterations === MAX_ANALYZED_PERMUTATIONS) {
-              break
-            }
-
-            await delay(0)
+          // Random shuffles (no allocation blow-up)
+          for (let i = 0; i < MAX_ANALYZED_PERMUTATIONS; i++) {
+            const perm = shuffle([...deltas]) // shuffle in place; we copied to avoid mutating source
+            const r = RGA('read')
+            for (const d of perm) r.apply(transmit(d))
+            expect(r.value()).to.deep.equal(expectedResult)
+            await delay(0) // yield to event loop to keep tests responsive
           }
         })
       })
 
       describe('random mutations', () => {
-        let combinations
         let newDeltas
         let expectedResult
 
@@ -73,41 +80,46 @@ describe('rga permutations', function () {
           const { deltas, expectedResult: _expectedResult } = randomMutations(replicas, iteration)
           newDeltas = deltas
           expectedResult = _expectedResult
-          const r = RGA('read')
-          for (let delta of allDeltas) {
-            r.apply(transmit(delta))
-          }
-          for (let delta of deltas) {
-            r.apply(transmit(delta))
-          }
-          expect(r.value()).to.deep.equal(expectedResult)
-          length = expectedResult.length
 
-          combinations = Combinations(shuffle(deltas))
+          // Sanity: applying all prior deltas + these deltas in original order yields expectedResult
+          const r = RGA('read')
+          for (const d of allDeltas) r.apply(transmit(d))
+          for (const d of deltas) r.apply(transmit(d))
+          expect(r.value()).to.deep.equal(expectedResult)
+
+          // update running length
+          length = expectedResult.length
         })
 
         after(() => {
           allDeltas = allDeltas.concat(newDeltas)
         })
 
-        it('all mutation combinations lead to the same result', async () => {
-          let iterations = 0
-          for (let deltas of combinations) {
+        it('all (sampled) mutation orders lead to the same result', async () => {
+          const baseline = [...allDeltas] // prior history stays fixed
+          const deltas = newDeltas
+
+          // Deterministic orders for the new deltas
+          const deterministicOrders = [
+            [...deltas],
+            [...deltas].reverse(),
+            [...deltas].slice().sort((a, b) => String(a).localeCompare(String(b)))
+          ]
+
+          for (const order of deterministicOrders) {
             const r = RGA('read')
-            for (let delta of allDeltas) {
-              r.apply(transmit(delta))
-            }
-
-            for (let delta of deltas) {
-              r.apply(transmit(delta))
-            }
-
+            for (const d of baseline) r.apply(transmit(d))
+            for (const d of order) r.apply(transmit(d))
             expect(r.value()).to.deep.equal(expectedResult)
+          }
 
-            if (++iterations === MAX_ANALYZED_PERMUTATIONS) {
-              break
-            }
-
+          // Random shuffles
+          for (let i = 0; i < MAX_ANALYZED_PERMUTATIONS; i++) {
+            const perm = shuffle([...deltas])
+            const r = RGA('read')
+            for (const d of baseline) r.apply(transmit(d))
+            for (const d of perm) r.apply(transmit(d))
+            expect(r.value()).to.deep.equal(expectedResult)
             await delay(0)
           }
         })
@@ -123,15 +135,17 @@ function pushMutations(replicas) {
       deltas.push(replica.push(`${replicaIndex}-${i}`))
     }
   })
-  for (let delta of deltas) {
-    replicas.forEach((replica) => {
+
+  // apply each delta to every replica
+  for (const delta of deltas) {
+    for (const replica of replicas) {
       replica.apply(transmit(delta))
-    })
+    }
   }
 
+  // all replicas must converge
   let expectedResult
-
-  for (let replica of replicas) {
+  for (const replica of replicas) {
     if (!expectedResult) {
       expectedResult = replica.value()
     } else {
@@ -146,24 +160,30 @@ function randomMutations(replicas, iteration) {
   const deltas = []
   for (let i = 0; i < OP_COUNT_PER_NODE; i++) {
     replicas.forEach((replica, replicaIndex) => {
+      // removeAt (if length > 0)
       let len = replica.value().length
-      let index = Math.floor(Math.random() * len)
-      deltas.push(replica.removeAt(index))
+      if (len > 0) {
+        const index = Math.floor(Math.random() * len)
+        deltas.push(replica.removeAt(index))
+      }
 
+      // insertAt
       len = replica.value().length
-      index = Math.floor(Math.random() * len)
+      const index = Math.floor(Math.random() * (len + 1))
       deltas.push(replica.insertAt(index, `${replicaIndex}-${iteration}-${i}`))
     })
   }
 
-  for (let delta of deltas) {
-    for (let replica of replicas) {
+  // apply each delta to every replica
+  for (const delta of deltas) {
+    for (const replica of replicas) {
       replica.apply(transmit(delta))
     }
   }
 
+  // all replicas must converge
   let expectedResult
-  for (let replica of replicas) {
+  for (const replica of replicas) {
     const value = replica.value()
     if (!expectedResult) {
       expectedResult = value
