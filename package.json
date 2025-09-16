@@ -24,12 +24,12 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ianengelbrecht/delta-crdts.git"
+    "url": "git+https://github.com/ianengelbrecht/delta-crdts-esm.git"
   },
   "bugs": {
-    "url": "https://github.com/ianengelbrecht/delta-crdts/issues"
+    "url": "https://github.com/ianengelbrecht/delta-crdts-esm/issues"
   },
-  "homepage": "https://github.com/ianengelbrecht/delta-crdts#readme",
+  "homepage": "https://github.com/ianengelbrecht/delta-crdts-esm#readme",
   "author": "Ian Engelbrecht",
   "license": "MIT",
   "sideEffects": false,
