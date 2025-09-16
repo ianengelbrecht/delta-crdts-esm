@@ -1,5 +1,5 @@
 import { expect } from 'chai'
-import { encode, decode } from '../src/msgpack.js';
+import { encode, decode } from '../src/index.js';
 
 describe('msgpack', () => {
 
