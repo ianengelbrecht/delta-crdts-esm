@@ -23,7 +23,7 @@ describe('gset', () => {
 
     it('can add element', (done) => {
       gset.once('change', (change) => {
-        expect(change.add).to.equal('a')
+        expect(change.detail.add).to.equal('a')
         done()
       })
       gset.add('a')
@@ -48,11 +48,11 @@ describe('gset', () => {
       replica2 = GSet('id2')
 
       replica1.on('change', (change) => {
-        expect(change).to.deep.equal(expectedChanges.id1.shift())
+        expect(change.detail).to.deep.equal(expectedChanges.id1.shift())
       })
 
       replica2.on('change', (change) => {
-        expect(change).to.deep.equal(expectedChanges.id2.shift())
+        expect(change.detail).to.deep.equal(expectedChanges.id2.shift())
       })
     })
 

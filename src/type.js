@@ -1,7 +1,5 @@
 'use strict'
-//TODO remove all buffers throughout
 //TODO replace eventemmitter
-import EventEmitter from 'events'
 
 // replacing the old version from immutable.js -- immutable types are not created anywhere in the code
 export function isCollection(value) {
@@ -11,7 +9,7 @@ export function isCollection(value) {
 export default function createTypeInstance(Type) {
   return (id) => {
     let state = Type.initial()
-    const ret = new EventEmitter()
+    const ret = new Emitter()
     const emitter = new ChangeEmitter(ret)
     let valueCache
 
@@ -62,6 +60,37 @@ export default function createTypeInstance(Type) {
     return ret
   }
 }
+
+// EventEmitter shim from ChatGPT
+class Emitter {
+  constructor() {
+    this._target = new EventTarget();
+  }
+
+  on(type, listener, options) {
+    this._target.addEventListener(type, listener, options);
+    return this; // chainable
+  }
+
+  off(type, listener, options) {
+    this._target.removeEventListener(type, listener, options);
+    return this;
+  }
+
+  once(type, listener, options) {
+    const wrapper = (event) => {
+      this.off(type, wrapper, options);
+      listener(event);
+    };
+    this.on(type, wrapper, options);
+    return this;
+  }
+
+  emit(type, detail) {
+    return this._target.dispatchEvent(new CustomEvent(type, { detail }));
+  }
+}
+
 
 class ChangeEmitter {
   constructor(client) {
