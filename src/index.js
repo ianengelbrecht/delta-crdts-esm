@@ -55,3 +55,5 @@ function define(typeName, impl) {
 
 CRDT.define = define
 CRDT.type = type
+
+export { encode, decode } from './msgpack.js'
