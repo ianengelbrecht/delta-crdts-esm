@@ -1,41 +1,49 @@
 'use strict'
-//TODO replace eventemmitter
+
+// helpers
+function wrapDelta(core, typeName, id) {
+  return { __crdt: { type: typeName, id }, delta: core }
+}
+function unwrapDelta(d) {
+  return (d && d.__crdt && 'delta' in d) ? d.delta : d
+}
 
 // replacing the old version from immutable.js -- immutable types are not created anywhere in the code
 export function isCollection(value) {
   return value instanceof Map || value instanceof Set;
 }
 
-export default function createTypeInstance(Type) {
+export default function createTypeInstance(Type, typeName) {
   return (id) => {
     let state = Type.initial()
     const ret = new Emitter()
     const emitter = new ChangeEmitter(ret)
     let valueCache
+    const _typeName = typeName || Type.__typeName || Type.typeName || 'unknown'
 
     Object.keys(Type.mutators || {}).forEach((mutatorName) => {
       const mutator = Type.mutators[mutatorName]
       ret[mutatorName] = (...args) => {
-        const delta = mutator(id, state, ...args)
-        const newState = Type.join.call(emitter, state, delta)
+        const coreDelta = mutator(id, state, ...args)
+        const newState = Type.join.call(emitter, state, coreDelta)
         if (Type.incrementalValue) {
-          valueCache = Type.incrementalValue(state, newState, delta, valueCache)
+          valueCache = Type.incrementalValue(state, newState, coreDelta, valueCache)
         }
         state = newState
         emitter.emitAll()
         ret.emit('state changed', state)
-        return delta
+        return wrapDelta(coreDelta, _typeName, id) // return typed delta
       }
     })
 
     ret.id = id
+    ret.type = _typeName             // convenient aliases
+    ret.typeName = _typeName
 
     ret.value = () => {
       if (Type.incrementalValue && (valueCache !== undefined)) {
         let returnValue = valueCache.value
-        if (isCollection(returnValue)) {
-          returnValue = returnValue.toJS()
-        }
+        if (isCollection(returnValue)) returnValue = returnValue.toJS()
         return returnValue
       } else {
         return Type.value(state)
@@ -43,9 +51,10 @@ export default function createTypeInstance(Type) {
     }
 
     ret.apply = (delta) => {
-      const newState = Type.join.call(emitter, state, delta, { strict: true })
+      const core = unwrapDelta(delta)
+      const newState = Type.join.call(emitter, state, core, { strict: true })
       if (Type.incrementalValue) {
-        valueCache = Type.incrementalValue(state, newState, delta, valueCache)
+        valueCache = Type.incrementalValue(state, newState, core, valueCache)
       }
       state = newState
       emitter.emitAll()
@@ -55,7 +64,8 @@ export default function createTypeInstance(Type) {
 
     ret.state = () => state
 
-    ret.join = Type.join
+    // join that tolerates wrapped deltas
+    ret.join = (s, d, ...rest) => Type.join.call(emitter, s, unwrapDelta(d), ...rest)
 
     return ret
   }

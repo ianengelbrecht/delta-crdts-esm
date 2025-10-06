@@ -36,7 +36,9 @@ const types = {
 }
 
 export default function CRDT(typeName) {
-  return Type(type(typeName))
+  const impl = type(typeName)
+  impl.__typeName = typeName // optional: carry on the impl itself
+  return Type(impl, typeName) // pass through
 }
 
 

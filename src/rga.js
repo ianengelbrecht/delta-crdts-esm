@@ -78,82 +78,76 @@ export default {
 }
 
 function join(s1, s2, options = {}) {
-  const added = new Map([...s1[0], ...s2[0]])
-  const removed = new Set([...s1[1], ...s2[1]])
+  // tolerate wrapped deltas like { __crdt:{...}, delta:[...]}
+  const unwrap = (d) => (d && d.__crdt && 'delta' in d) ? d.delta : d;
 
-  const s1Edges = s1[2]
-  const s2Edges = s2[2]
-  const resultEdges = new Map(s1Edges)
+  s1 = unwrap(s1) || [];
+  s2 = unwrap(s2) || [];
 
-  const unmergedEdges = new Set([...(s1[3] || new Set()), ...(s2[3] || new Set())])
+  const a1 = s1[0] instanceof Map ? s1[0] : new Map();
+  const a2 = s2[0] instanceof Map ? s2[0] : new Map();
+  const added = new Map([...a1, ...a2]);
 
-  const edgesToAdd = new Map(s2Edges)
+  const r1 = s1[1] instanceof Set ? s1[1] : new Set();
+  const r2 = s2[1] instanceof Set ? s2[1] : new Set();
+  const removed = new Set([...r1, ...r2]);
 
-  if (!resultEdges.size) {
-    resultEdges.set(null, null)
-  }
+  const s1Edges = s1[2] instanceof Map ? s1[2] : new Map([[null, null]]);
+  const s2Edges = s2[2] instanceof Map ? s2[2] : new Map();
+  const resultEdges = new Map(s1Edges.size ? s1Edges : [[null, null]]);
+
+  const u1 = s1[3] instanceof Set ? s1[3] : new Set();
+  const u2 = s2[3] instanceof Set ? s2[3] : new Set();
+  const unmergedEdges = new Set([...u1, ...u2]);
+
+  const edgesToAdd = new Map(s2Edges);
+
+  if (!resultEdges.size) resultEdges.set(null, null);
 
   while (edgesToAdd.size > 0) {
-    for (const edge of edgesToAdd) {
-      const [key, newValue] = edge
-
+    for (const [key, newValue] of Array.from(edgesToAdd)) {
       if (resultEdges.has(newValue)) {
-        // bypass this edge, already inserted
+        // already inserted
       } else if (resultEdges.has(key)) {
-        if (!added.has(newValue)) {
-          unmergedEdges.add(edge)
-        } else {
-          insertEdge(edge)
-        }
+        if (!added.has(newValue)) unmergedEdges.add([key, newValue]);
+        else insertEdge([key, newValue]);
       } else {
-        unmergedEdges.add(edge)
+        unmergedEdges.add([key, newValue]);
       }
-      edgesToAdd.delete(key)
+      edgesToAdd.delete(key);
     }
   }
 
   if (unmergedEdges.size) {
-    let progress = false
+    let progress;
     do {
-      const countBefore = unmergedEdges.size
-      for (const edge of unmergedEdges) {
-        const [key, newValue] = edge
+      const before = unmergedEdges.size;
+      for (const edge of Array.from(unmergedEdges)) {
+        const [key, newValue] = edge;
         if (resultEdges.has(newValue)) {
-          // bypass this edge, already inserted
-          unmergedEdges.delete(edge)
-        } else if (resultEdges.has(key) && added.has(key)) {
-          insertEdge(edge)
-          unmergedEdges.delete(edge)
+          unmergedEdges.delete(edge);
+        } else if (resultEdges.has(key) && added.has(newValue)) { // <-- FIXED
+          insertEdge(edge);
+          unmergedEdges.delete(edge);
         }
       }
-
-      progress = unmergedEdges.size < countBefore
-    } while (progress)
+      progress = unmergedEdges.size < before;
+    } while (progress);
   }
 
-  return [added, removed, resultEdges, unmergedEdges]
+  return [added, removed, resultEdges, unmergedEdges];
 
-  function insertEdge(edge) {
-    let [leftEdge, newKey] = edge
-
-    let right = resultEdges.get(leftEdge) || null
-
-    if (!newKey || right === newKey) {
-      return
-    }
-
+  function insertEdge([leftEdge, newKey]) {
+    let right = resultEdges.get(leftEdge) || null;
+    if (!newKey || right === newKey) return;
     while (right && (compareIds(right, newKey) > 0)) {
-      leftEdge = right
-      right = resultEdges.get(right) || null
+      leftEdge = right;
+      right = resultEdges.get(right) || null;
     }
-
-    resultEdges.set(leftEdge, newKey)
-    resultEdges.set(newKey, right)
+    resultEdges.set(leftEdge, newKey);
+    resultEdges.set(newKey, right);
   }
-
 }
-
-
 
 function insertAt(id, state, pos, value) {
   return insertAllAt(id, state, pos, [value])

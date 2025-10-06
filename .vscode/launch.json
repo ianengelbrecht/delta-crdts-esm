@@ -1,0 +1,30 @@
+{
+  // Use IntelliSense to learn about possible attributes.
+  // Hover to view descriptions of existing attributes.
+  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Debug Mocha Tests",
+      "program": "${workspaceFolder}/node_modules/mocha/bin/mocha",
+      "args": [
+        // Specify the directory and or file where your tests are located
+        "${workspaceFolder}/test/rga-causal.spec.js",
+        // Optional: Add a grep filter to run only one test suite
+        //"--grep", "rga causal",
+        // Optional: Specify file extensions if not standard .js
+        // "--extension", "ts",
+        // Use recursive option if tests are in subdirectories
+        "--recursive" 
+      ],
+      "cwd": "${workspaceFolder}",
+      "internalConsoleOptions": "openOnSessionStart",
+      // Skips debugging node internals
+      "skipFiles": [
+        "<node_internals>/**"
+      ]
+    }
+  ]
+}
