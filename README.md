@@ -16,6 +16,8 @@ Note these omissions in the original documentation:
 
 Timestamps can be anything comparable with < and > but you probably want to use something like an [HLC](https://www.npmjs.com/package/@tpp/hybrid-logical-clock).
 
+Note also that joining states or deltas requires a CRDT instance (e.g. MVREG('random').join()), and not the CRDT factory as indicated in the documentation.
+
 The CRDT type ('gcounter', 'rga', etc) is also now accessible with [mycrdtinstance].type, and on deltas with [mydeltainstance].__crdt.type.
 
 Also moved the MessagePack codec here so an additional dependency is not necessary. It will encode/decode plain deltas, CRDT state, and more complex objects containing CRDT state/deltas. 
