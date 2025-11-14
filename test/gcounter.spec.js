@@ -9,6 +9,8 @@ describe('gcounter', () => {
   describe('local', () => {
     let GCounter
     let gcounter
+    let delta
+
     it('type can be created', () => {
       GCounter = CRDT('gcounter')
     })
@@ -17,12 +19,24 @@ describe('gcounter', () => {
       gcounter = GCounter('id1')
     })
 
+    it('indicates its type', () => {
+      expect(gcounter.type).to.equal('gcounter')
+    })
+
     it('starts with a value of 0', () => {
       expect(gcounter.value()).to.equal(0)
     })
 
     it('can be incremented', () => {
-      gcounter.inc()
+      delta = gcounter.inc()
+    })
+
+    it('delta has __crdt property', () => {
+      expect(delta).to.have.property('__crdt')
+    })
+
+    it('has the type on the delta', () => {
+      expect(delta.__crdt.type).to.equal('gcounter')
     })
 
     it('and the value is incremented', () => {

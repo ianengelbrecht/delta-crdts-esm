@@ -1,6 +1,6 @@
 # delta-crdts-esm
 
-An ESM port of [delta-crdts](https://www.npmjs.com/package/delta-crdts), just to make it a bit easier to work with, and with some updates to newer dependencies. See that page for the docs and a video demonstration. Version number continues from there. A tremendous thank you to the original author for the comprehensive test suite, updates would have been impossible without it.
+An ESM port of [delta-crdts](https://www.npmjs.com/package/delta-crdts), just to make it a bit easier to work with, and with some updates to newer dependencies. See the original page for the docs and a video demonstration. Version number continues from there. A tremendous thank you to the original author for the comprehensive test suite, updates would have been impossible without it.
 
 ```
 npm install delta-crdts-esm

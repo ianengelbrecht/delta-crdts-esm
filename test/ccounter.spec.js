@@ -9,6 +9,8 @@ describe('ccounter', () => {
   describe('local', () => {
     let CCounter
     let ccounter
+    let delta
+
     it('type can be created', () => {
       CCounter = CRDT('ccounter')
     })
@@ -17,12 +19,24 @@ describe('ccounter', () => {
       ccounter = CCounter('id1')
     })
 
+    it('indicates its type', () => {
+      expect(ccounter.type).to.equal('ccounter')
+    })
+
     it('starts with a value of 0', () => {
       expect(ccounter.value()).to.equal(0)
     })
 
     it('can be incremented', () => {
-      ccounter.inc()
+      delta = ccounter.inc()
+    })
+
+    it('delta has __crdt property', () => {
+      expect(delta).to.have.property('__crdt')
+    })
+
+    it('has the type on the delta', () => {
+      expect(delta.__crdt.type).to.equal('ccounter')
     })
 
     it('and the value is incremented', () => {

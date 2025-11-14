@@ -11,6 +11,8 @@ describe('rga', () => {
   describe('local', () => {
     let RGA
     let rga
+    let delta
+
     it('type can be created', () => {
       RGA = CRDT('rga')
     })
@@ -19,12 +21,24 @@ describe('rga', () => {
       rga = RGA('id1')
     })
 
+    it('indicates its type', () => {
+      expect(rga.type).to.equal('rga')
+    })
+
     it('starts empty', () => {
       expect(rga.value()).to.be.empty
     })
 
     it('adds to the right value', () => {
-      rga.addRight(null, 'a')
+      delta = rga.addRight(null, 'a')
+    })
+
+    it('delta has __crdt property', () => {
+      expect(delta).to.have.property('__crdt')
+    })
+
+    it('has the type on the delta', () => {
+      expect(delta.__crdt.type).to.equal('rga')
     })
 
     it('and the value is inserted', () => {

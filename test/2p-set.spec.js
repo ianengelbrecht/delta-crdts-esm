@@ -6,9 +6,12 @@ import CRDT from '../src/index.js'
 import transmit from './helpers/transmit.js'
 
 describe('2pset', () => {
+
   describe('local', () => {
     let TwoPSet
     let twopset
+    let delta
+
     it('type can be created', () => {
       TwoPSet = CRDT('2pset')
     })
@@ -17,12 +20,24 @@ describe('2pset', () => {
       twopset = TwoPSet('id1')
     })
 
+    it('indicates its type', () => {
+      expect(twopset.type).to.equal('2pset')
+    })
+
     it('starts empty', () => {
       expect(twopset.value().size).to.equal(0)
     })
 
     it('can add element', () => {
-      twopset.add('a')
+      delta = twopset.add('a')
+    })
+
+    it('delta has __crdt property', () => {
+      expect(delta).to.have.property('__crdt')
+    });
+
+    it('has the type on the delta', () => {
+      expect(delta.__crdt.type).to.equal('2pset')
     })
 
     it('and the value is inserted', () => {

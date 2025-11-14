@@ -10,7 +10,7 @@ const ZERO = {
   value: (state) => state
 }
 
-
+// TODO test that we're adding the custom type to the CRDT and to its deltas
 describe('extension', () => {
   let Type, replica
 

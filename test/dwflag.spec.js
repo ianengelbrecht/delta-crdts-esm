@@ -9,6 +9,9 @@ describe('dwflag', () => {
   describe('local', () => {
     let DWFlag
     let dwflag
+    let delta
+
+
     it('type can be created', () => {
       DWFlag = CRDT('dwflag')
     })
@@ -17,12 +20,24 @@ describe('dwflag', () => {
       dwflag = DWFlag('id1')
     })
 
+    it('indicates its type', () => {
+      expect(dwflag.type).to.equal('dwflag')
+    })
+
     it('starts true', () => {
       expect(dwflag.value()).to.equal(true)
     })
 
     it('can enable', () => {
-      dwflag.enable()
+      delta = dwflag.enable()
+    })
+
+    it('delta has __crdt property', () => {
+      expect(delta).to.have.property('__crdt')
+    })
+
+    it('has the type on the delta', () => {
+      expect(delta.__crdt.type).to.equal('dwflag')
     })
 
     it('and the value is true', () => {

@@ -9,12 +9,18 @@ describe('gset', () => {
   describe('local', () => {
     let GSet
     let gset
+    let delta
+
     it('type can be created', () => {
       GSet = CRDT('gset')
     })
 
     it('can be instantiated', () => {
       gset = GSet('id1')
+    })
+
+    it('indicates its type', () => {
+      expect(gset.type).to.equal('gset')
     })
 
     it('starts empty', () => {
@@ -26,7 +32,15 @@ describe('gset', () => {
         expect(change.detail.add).to.equal('a')
         done()
       })
-      gset.add('a')
+      delta = gset.add('a')
+    })
+
+    it('delta has __crdt property', () => {
+      expect(delta).to.have.property('__crdt')
+    })
+
+    it('has the type on the delta', () => {
+      expect(delta.__crdt.type).to.equal('gset')
     })
 
     it('and the value is inserted', () => {

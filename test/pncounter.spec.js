@@ -9,6 +9,8 @@ describe('pncounter', () => {
   describe('local', () => {
     let PNCounter
     let pncounter
+    let delta
+
     it('type can be created', () => {
       PNCounter = CRDT('pncounter')
     })
@@ -17,12 +19,24 @@ describe('pncounter', () => {
       pncounter = PNCounter('id1')
     })
 
+    it('indicates its type', () => {
+      expect(pncounter.type).to.equal('pncounter')
+    })
+
     it('starts with a value of 0', () => {
       expect(pncounter.value()).to.equal(0)
     })
 
     it('can be incremented', () => {
-      pncounter.inc()
+      delta = pncounter.inc()
+    })
+
+    it('delta has __crdt property', () => {
+      expect(delta).to.have.property('__crdt')
+    })
+
+    it('has the type on the delta', () => {
+      expect(delta.__crdt.type).to.equal('pncounter')
     })
 
     it('and the value is incremented', () => {

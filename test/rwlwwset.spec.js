@@ -9,6 +9,8 @@ describe('rwlwwset', () => {
   describe('local', () => {
     let RWLWWSet
     let rwlwwset
+    let delta
+
     it('type can be created', () => {
       RWLWWSet = CRDT('rwlwwset')
     })
@@ -17,12 +19,24 @@ describe('rwlwwset', () => {
       rwlwwset = RWLWWSet('id1')
     })
 
+    it('indicates its type', () => {
+      expect(rwlwwset.type).to.equal('rwlwwset')
+    })
+
     it('starts empty', () => {
       expect(rwlwwset.value().size).to.equal(0)
     })
 
     it('can add element', () => {
-      rwlwwset.add(1, 'a')
+      delta = rwlwwset.add(1, 'a')
+    })
+
+    it('delta has __crdt property', () => {
+      expect(delta).to.have.property('__crdt')
+    })
+
+    it('has the type on the delta', () => {
+      expect(delta.__crdt.type).to.equal('rwlwwset')
     })
 
     it('and the value is inserted', () => {

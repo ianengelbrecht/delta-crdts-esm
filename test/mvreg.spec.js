@@ -9,6 +9,8 @@ describe('mvreg', () => {
   describe('local', () => {
     let MVReg
     let mvreg
+    let delta
+
     it('type can be created', () => {
       MVReg = CRDT('mvreg')
     })
@@ -17,13 +19,25 @@ describe('mvreg', () => {
       mvreg = MVReg('id1')
     })
 
+    it('indicates its type', () => {
+      expect(mvreg.type).to.equal('mvreg')
+    })
+
     it('starts empty', () => {
       expect(mvreg.value().size).to.equal(0)
     })
 
     it('can write value', () => {
       mvreg.write('a')
-      mvreg.write('b')
+      delta = mvreg.write('b')
+    })
+
+    it('delta has __crdt property', () => {
+      expect(delta).to.have.property('__crdt')
+    })
+
+    it('has the type on the delta', () => {
+      expect(delta.__crdt.type).to.equal('mvreg')
     })
 
     it('and the value is inserted', () => {

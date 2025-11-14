@@ -9,6 +9,8 @@ describe('aworset', () => {
   describe('local', () => {
     let AWORSet
     let aworset
+    let delta
+
     it('type can be created', () => {
       AWORSet = CRDT('aworset')
     })
@@ -17,12 +19,24 @@ describe('aworset', () => {
       aworset = AWORSet('id1')
     })
 
+    it('indicates its type', () => {
+      expect(aworset.type).to.equal('aworset')
+    })
+
     it('starts empty', () => {
       expect(aworset.value().size).to.equal(0)
     })
 
     it('can add element', () => {
-      aworset.add('a')
+      delta = aworset.add('a')
+    })
+
+    it('delta has __crdt property', () => {
+      expect(delta).to.have.property('__crdt')
+    })
+
+    it('has the type on the delta', () => {
+      expect(delta.__crdt.type).to.equal('aworset')
     })
 
     it('and the value is inserted', () => {

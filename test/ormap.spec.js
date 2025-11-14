@@ -10,6 +10,8 @@ describe('ormap', () => {
   describe('local', () => {
     let ORMap
     let ormap
+    let delta
+
     it('type can be created', () => {
       ORMap = CRDT('ormap')
     })
@@ -18,12 +20,24 @@ describe('ormap', () => {
       ormap = ORMap('id1')
     })
 
+    it('indicates its type', () => {
+      expect(ormap.type).to.equal('ormap')
+    })
+
     it('starts empty', () => {
       expect(ormap.value()).to.deep.equal({})
     })
 
     it('can apply a causal CRDT', () => {
-      ormap.applySub('a', 'ccounter', 'inc', 2)
+      delta = ormap.applySub('a', 'ccounter', 'inc', 2)
+    })
+
+    it('delta has __crdt property', () => {
+      expect(delta).to.have.property('__crdt')
+    })
+
+    it('has the type on the delta', () => {
+      expect(delta.__crdt.type).to.equal('ormap')
     })
 
     it('can get value', () => {

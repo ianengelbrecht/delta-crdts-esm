@@ -9,6 +9,8 @@ describe('lwwreg', () => {
   describe('local', () => {
     let LWWReg
     let lwwreg
+    let delta
+
     it('type can be created', () => {
       LWWReg = CRDT('lwwreg')
     })
@@ -17,13 +19,25 @@ describe('lwwreg', () => {
       lwwreg = LWWReg('id1')
     })
 
+    it('indicates its type', () => {
+      expect(lwwreg.type).to.equal('lwwreg')
+    })
+
     it('starts empty', () => {
       expect(lwwreg.value()).to.not.exist
     })
 
     it('can write value', () => {
       lwwreg.write(1, 'a')
-      lwwreg.write(2, 'b')
+      delta = lwwreg.write(2, 'b')
+    })
+
+    it('delta has __crdt property', () => {
+      expect(delta).to.have.property('__crdt')
+    })
+
+    it('has the type on the delta', () => {
+      expect(delta.__crdt.type).to.equal('lwwreg')
     })
 
     it('and the value is inserted', () => {

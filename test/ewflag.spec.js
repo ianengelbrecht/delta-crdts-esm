@@ -9,6 +9,8 @@ describe('ewflag', () => {
   describe('local', () => {
     let EWFlag
     let ewflag
+    let delta
+
     it('type can be created', () => {
       EWFlag = CRDT('ewflag')
     })
@@ -17,16 +19,28 @@ describe('ewflag', () => {
       ewflag = EWFlag('id1')
     })
 
+    it('indicates its type', () => {
+      expect(ewflag.type).to.equal('ewflag')
+    })
+
     it('starts false', () => {
       expect(ewflag.value()).to.equal(false)
     })
 
     it('can be enabled', () => {
-      ewflag.enable()
+      delta = ewflag.enable()
     })
 
     it('and the value is true', () => {
       expect(ewflag.value()).to.equal(true)
+    })
+
+    it('delta has __crdt property', () => {
+      expect(delta).to.have.property('__crdt')
+    })
+
+    it('has the type on the delta', () => {
+      expect(delta.__crdt.type).to.equal('ewflag')
     })
   })
 

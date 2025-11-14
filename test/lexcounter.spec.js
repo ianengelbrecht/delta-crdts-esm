@@ -9,6 +9,8 @@ describe('lexcounter', () => {
   describe('local', () => {
     let LexCounter
     let lexcounter
+    let delta
+
     it('type can be created', () => {
       LexCounter = CRDT('lexcounter')
     })
@@ -17,12 +19,24 @@ describe('lexcounter', () => {
       lexcounter = LexCounter('id1')
     })
 
+    it('indicates its type', () => {
+      expect(lexcounter.type).to.equal('lexcounter')
+    })
+
     it('starts with a value of 0', () => {
       expect(lexcounter.value()).to.equal(0)
     })
 
     it('can be incremented', () => {
-      lexcounter.inc()
+      delta = lexcounter.inc()
+    })
+
+    it('delta has __crdt property', () => {
+      expect(delta).to.have.property('__crdt')
+    })
+
+    it('has the type on the delta', () => {
+      expect(delta.__crdt.type).to.equal('lexcounter')
     })
 
     it('and the value is incremented', () => {
