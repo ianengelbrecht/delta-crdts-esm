@@ -1,6 +1,6 @@
 {
   "name": "delta-crdts-esm",
-  "version": "0.12.0",
+  "version": "0.12.1",
   "description": "Updated Delta-based State CRDTs by Pedro Teixeira",
   "type": "module",
   "exports": {
