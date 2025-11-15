@@ -51,21 +51,24 @@ export default function createTypeInstance(Type, typeName) {
     }
 
     ret.apply = (delta) => {
-      const core = unwrapDelta(delta)
-      const newState = Type.join.call(emitter, state, core, { strict: true })
+      const core = unwrapDelta(delta);
+      const newState = Type.join.call(emitter, state, core, { strict: true });
       if (Type.incrementalValue) {
-        valueCache = Type.incrementalValue(state, newState, core, valueCache)
+        valueCache = Type.incrementalValue(state, newState, core, valueCache);
       }
-      state = newState
-      emitter.emitAll()
-      ret.emit('state changed', state)
-      return state
+      state = newState;
+      emitter.emitAll();
+      ret.emit('state changed', state);
+      return wrapDelta(state, _typeName, id); // Return wrapped state
     }
 
     ret.state = () => state
 
     // join that tolerates wrapped deltas
-    ret.join = (s, d, ...rest) => Type.join.call(emitter, s, unwrapDelta(d), ...rest)
+    ret.join = (s, d, ...rest) => {
+      const result = Type.join.call(emitter, s, unwrapDelta(d), ...rest);
+      return wrapDelta(result, _typeName, id); // Return wrapped result
+    };
 
     return ret
   }

@@ -69,6 +69,8 @@ describe('aworset', () => {
 
     let replica1, replica2
     let deltas = [[], []]
+    let joined
+
     before(() => {
       replica1 = AWORSet('id1')
       replica2 = AWORSet('id2')
@@ -92,10 +94,14 @@ describe('aworset', () => {
     })
 
     it('changes can be raw joined', () => {
-      const state = AWORSet('joiner').join(transmit(replica1.state()), transmit(replica2.state()))
+      joined = AWORSet('joiner').join(transmit(replica1.state()), transmit(replica2.state()))
       const replica = AWORSet('replica')
-      replica.apply(state)
+      replica.apply(joined)
       expect(Array.from(replica.value()).sort()).to.deep.equal(['a', 'b', 'c', 'd', 'e'])
+    })
+
+    it('joined changes have correct type', () => {
+      expect(joined.__crdt.type).to.equal('aworset')
     })
 
     it('changes from one can be joined to the other', () => {

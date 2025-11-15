@@ -25,6 +25,22 @@
       "skipFiles": [
         "<node_internals>/**"
       ]
+    },
+    // debug current spec file 
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Debug Current Mocha Test File",
+      "program": "${workspaceFolder}/node_modules/mocha/bin/mocha",
+      "args": [
+        "${file}",
+        "--recursive"
+      ],
+      "cwd": "${workspaceFolder}",
+      "internalConsoleOptions": "openOnSessionStart",
+      "skipFiles": [
+        "<node_internals>/**"
+      ]
     }
   ]
 }
